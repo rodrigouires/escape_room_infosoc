@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sala de Estar — Conversa com Ana</title>
+<style>
+  :root{--creme:#fff9ec;--fundo:#fbf3e6;--grafite:#1f2a37;--azul:#1e4e8c;--verde:#078657;--verde-claro:#d9f5c7;--nav:#1e2d40}
+  *{box-sizing:border-box}
+  html,body{margin:0;width:100%;height:100%;font-family:Verdana,'Segoe UI',Arial,sans-serif;color:var(--grafite);background:var(--creme)}
+  .app{height:100dvh;min-height:430px;display:flex;flex-direction:column;overflow:hidden;background:var(--fundo)}
+  .status{flex:0 0 44px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:var(--creme);font-size:18px;font-weight:700;color:var(--grafite)}
+  .signals{display:flex;align-items:center;gap:7px;color:var(--grafite)}
+  .bars{height:17px;display:flex;align-items:end;gap:2px}.bars i{display:block;width:4px;background:var(--grafite);border-radius:1px}.bars i:nth-child(1){height:5px}.bars i:nth-child(2){height:9px}.bars i:nth-child(3){height:13px}.bars i:nth-child(4){height:17px}
+  .wifi{font-size:19px;line-height:1}.battery{display:block;border:2px solid var(--grafite);height:13px;width:22px;padding:2px;border-radius:3px;position:relative}.battery:before{content:'';display:block;width:100%;height:100%;background:#56b85f}.battery:after{content:'';position:absolute;right:-5px;top:3px;height:5px;width:2px;background:var(--grafite)}
+  .header{background:var(--verde);color:white;display:flex;align-items:center;gap:12px;padding:12px 14px;min-height:72px}
+  .back{font-size:29px;color:white;text-decoration:none;line-height:1;user-select:none}
+  .avatar{width:44px;height:44px;border-radius:50%;background:#ffe7b4;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:27px;flex-shrink:0}
+  .who{flex:1;min-width:0}.who b{display:block;font-size:21px;line-height:1.1}.who span{display:block;font-size:14px;margin-top:3px}
+  .camera{font-size:22px;user-select:none}.menu{font-size:26px;line-height:1;user-select:none}
+  .conversation{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px 15px 26px;background-color:var(--fundo);background-image:radial-gradient(circle at 17% 22%,rgba(215,193,160,.12) 0 2px,transparent 3px),radial-gradient(circle at 78% 64%,rgba(215,193,160,.12) 0 3px,transparent 4px);background-size:60px 65px}
+  .date{width:max-content;margin:0 auto 17px;background:white;border-radius:12px;padding:5px 17px;font-size:14px;font-weight:bold;box-shadow:0 2px 5px #0001}
+  .bubble{position:relative;border-radius:16px;background:white;box-shadow:0 2px 5px #0002;margin:0 auto 20px 0;max-width:88%;padding:14px 13px 22px;font-size:clamp(17px,3.5vw,23px);line-height:1.36;overflow-wrap:anywhere;white-space:pre-wrap}
+  .bubble.received::before{content:'';position:absolute;left:-7px;top:13px;border-top:11px solid white;border-left:11px solid transparent}
+  .bubble.sent{margin-left:auto;margin-right:0;background:var(--verde-claro)}
+  .stamp{position:absolute;bottom:5px;right:10px;font-size:11px;color:#586473;line-height:1;white-space:nowrap}.stamp .ticks{color:#147cca;font-weight:800}
+  .help{margin:12px 0 18px;background:#fff0bd;border-left:6px solid #f2c230;border-radius:10px;padding:13px 15px;font-size:clamp(15px,3vw,19px);line-height:1.4}
+  .done{display:none;background:#e1f5e2;border:2px solid #2e7d32;border-radius:13px;padding:13px 14px;margin:16px 0 4px;font-size:clamp(14px,3vw,18px);line-height:1.4}
+  .done.show{display:block}
+  form{flex:0 0 auto;display:flex;gap:9px;align-items:center;padding:12px 11px;background:var(--creme);border-top:1px solid #e1d8c8}
+  .field{display:flex;align-items:center;flex:1;min-width:0;background:white;border:2px solid #cbd0d2;border-radius:26px;padding:4px 9px;gap:7px;min-height:54px}
+  .smile{color:#536274;font-size:22px;user-select:none}
+  input{font:inherit;font-size:clamp(15px,3vw,20px);min-width:0;border:0;outline:0;background:transparent;flex:1;color:var(--grafite);padding:7px 0}
+  input::placeholder{color:#78838e}
+  button.send{width:52px;height:52px;border:0;background:var(--verde);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:25px}
+  button.send:disabled{background:#7a9990;cursor:not-allowed}
+  .nav{height:55px;flex:0 0 55px;background:var(--nav);display:flex;justify-content:space-around;align-items:center;color:white}
+  .recent{display:flex;gap:3px;height:21px;align-items:center}.recent i{width:3px;background:white;height:19px;border-radius:1px}.home{width:19px;height:19px;border:3px solid white;border-radius:6px}.prev{width:15px;height:15px;border-left:3px solid white;border-bottom:3px solid white;transform:rotate(45deg)}
+  @media(max-width:400px){.status{height:33px;flex-basis:33px;font-size:12px}.header{min-height:53px;padding:6px 9px;gap:7px}.avatar{width:34px;height:34px;font-size:21px}.who b{font-size:16px}.who span{font-size:11px}.camera{font-size:18px}.menu{font-size:21px}.conversation{padding:10px 9px 14px}.bubble{font-size:14px;padding:10px 10px 18px}.date{font-size:10px;margin-bottom:10px}.help{font-size:12px;padding:8px;margin:8px 0 12px}.field{min-height:43px}.smile{font-size:18px}input{font-size:14px}button.send{height:42px;width:42px;font-size:21px}form{padding:7px}.nav{height:36px;flex-basis:36px}.home{width:14px;height:14px}.recent{height:16px}.recent i{height:15px}.prev{width:12px;height:12px}}
+</style>
+</head>
+<body>
+<main class="app" aria-label="Simulação de conversa com Ana">
+  <div class="status"><span>18:12</span><div class="signals" aria-label="Sinal e bateria"><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="wifi">⌁</span><span class="battery" aria-hidden="true"></span></div></div>
+  <header class="header"><span class="back" aria-hidden="true">‹</span><div class="avatar" aria-hidden="true">👩🏻</div><div class="who"><b>Ana</b><span>online</span></div><span class="camera" aria-hidden="true">▰</span><span class="menu" aria-hidden="true">⋮</span></header>
+  <section class="conversation" id="chat" aria-live="polite">
+    <div class="date">Hoje</div>
+    <div class="bubble received">Oi, mãe! Como está o dia de vocês?<span class="stamp">10:28</span></div>
+    <div class="done" id="done" role="status">✓ Mensagem enviada! Você conseguiu responder à Ana. Agora siga para o próximo desafio do jogo.</div>
+  </section>
+  <form id="msgform" autocomplete="off">
+    <label class="field"><span class="smile" aria-hidden="true">☺</span><input type="text" id="msg" name="msg" maxlength="400" aria-label="Mensagem para Ana" placeholder="Mensagem" required></label>
+    <button type="submit" class="send" id="send" aria-label="Enviar mensagem" disabled>➤</button>
+  </form>
+  <div class="nav" aria-hidden="true"><span class="recent"><i></i><i></i><i></i></span><span class="home"></span><span class="prev"></span></div>
+</main>
+<script>
+(function(){
+ const form=document.getElementById('msgform'), input=document.getElementById('msg'), btn=document.getElementById('send'), chat=document.getElementById('chat'), done=document.getElementById('done');
+ input.addEventListener('input',()=>{btn.disabled=!input.value.trim();});
+ form.addEventListener('submit',function(e){
+   e.preventDefault();const value=input.value.trim();if(!value)return;
+   const bubble=document.createElement('div');bubble.className='bubble sent';bubble.append(document.createTextNode(value));
+   const stamp=document.createElement('span');stamp.className='stamp';const now=new Date();stamp.textContent=now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+' ';
+   const ticks=document.createElement('span');ticks.className='ticks';ticks.textContent='✓✓';stamp.appendChild(ticks);bubble.appendChild(stamp);
+   chat.insertBefore(bubble,done);done.classList.add('show');
+   input.value='';btn.disabled=true;input.placeholder='Mensagem enviada';input.disabled=true;btn.disabled=true;
+   chat.scrollTop=chat.scrollHeight;
+ });
+})();
+</script>
+</body>
+</html>
